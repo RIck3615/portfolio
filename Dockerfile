@@ -1,6 +1,6 @@
 FROM php:8.2-apache
 
-# Installer les dépendances système
+# Installer uniquement les dépendances essentielles
 RUN apt-get update && apt-get install -y \
     git \
     unzip \
@@ -9,105 +9,57 @@ RUN apt-get update && apt-get install -y \
     sqlite3 \
     nodejs \
     npm \
-    # Dépendances pour l'extension gd
-    libpng-dev \
-    libjpeg-dev \
-    libfreetype6-dev \
-    # Dépendances pour l'extension zip
     libzip-dev \
-    # Dépendances pour l'extension mbstring
     libonig-dev \
-    # Dépendances pour l'extension pdo_mysql
-    default-mysql-client \
-    # Dépendances pour bcmath (inclus dans PHP core)
-    # Outils de build
-    build-essential \
     && rm -rf /var/lib/apt/lists/*
 
-# Configurer l'extension gd avec les bonnes options
-RUN docker-php-ext-configure gd \
-        --with-freetype \
-        --with-jpeg
+# Installer uniquement les extensions PHP essentielles
+RUN docker-php-ext-install \
+    pdo_sqlite \
+    mbstring \
+    zip
 
-# Installer les extensions PHP une par une pour un meilleur débogage
-RUN docker-php-ext-install pdo_mysql
-RUN docker-php-ext-install pdo_sqlite
-RUN docker-php-ext-install mbstring
-RUN docker-php-ext-install zip
-RUN docker-php-ext-install gd
-RUN docker-php-ext-install bcmath
-
-# Activer mod_rewrite pour Apache
+# Activer mod_rewrite
 RUN a2enmod rewrite
 
 # Installer Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
-# Configurer Apache
+# Configuration Apache
 RUN echo '<VirtualHost *:80>\n\
     DocumentRoot /var/www/html/public\n\
     <Directory /var/www/html/public>\n\
         AllowOverride All\n\
         Require all granted\n\
-        DirectoryIndex index.php index.html\n\
     </Directory>\n\
-    ErrorLog ${APACHE_LOG_DIR}/error.log\n\
-    CustomLog ${APACHE_LOG_DIR}/access.log combined\n\
 </VirtualHost>' > /etc/apache2/sites-available/000-default.conf
 
-# Définir le répertoire de travail
 WORKDIR /var/www/html
 
-# Copier d'abord les fichiers de configuration pour optimiser le cache Docker
-COPY composer.json composer.lock* ./
-COPY package.json package-lock.json* ./
+# Copier les fichiers de config
+COPY composer.json package.json ./
+COPY composer.lock* package-lock.json* ./
 
-# Installer les dépendances Composer
-RUN composer install --no-dev --optimize-autoloader --no-interaction --prefer-dist
-
-# Installer les dépendances npm
+# Installer les dépendances
+RUN composer install --no-dev --optimize-autoloader --no-interaction
 RUN npm ci --only=production
 
-# Copier le reste des fichiers
+# Copier le reste
 COPY . .
 
-# Créer les fichiers et dossiers nécessaires
+# Configuration Laravel
 RUN cp .env.example .env \
-    && mkdir -p database \
+    && mkdir -p database storage/logs storage/framework/{cache,sessions,views} bootstrap/cache \
     && touch database/database.sqlite \
-    && mkdir -p storage/logs \
-    && mkdir -p storage/framework/cache \
-    && mkdir -p storage/framework/sessions \
-    && mkdir -p storage/framework/views \
-    && mkdir -p bootstrap/cache
+    && npm run build \
+    && php artisan key:generate --force \
+    && php artisan migrate --force \
+    && php artisan config:cache
 
-# Build des assets
-RUN npm run build
-
-# Générer la clé d'application
-RUN php artisan key:generate --force
-
-# Exécuter les migrations
-RUN php artisan migrate --force
-
-# Cache des configurations
-RUN php artisan config:cache \
-    && php artisan route:cache \
-    && php artisan view:cache
-
-# Définir les permissions
+# Permissions
 RUN chown -R www-data:www-data /var/www/html \
-    && chmod -R 755 storage \
-    && chmod -R 755 bootstrap/cache \
+    && chmod -R 755 storage bootstrap/cache \
     && chmod 664 database/database.sqlite
 
-# Nettoyer
-RUN npm cache clean --force \
-    && apt-get clean \
-    && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
-
-# Exposer le port 80
 EXPOSE 80
-
-# Démarrer Apache
 CMD ["apache2-foreground"]
