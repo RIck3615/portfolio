@@ -1,0 +1,59 @@
+FROM php:8.2-apache
+
+# Installer les dépendances système
+RUN apt-get update && apt-get install -y \
+    git \
+    unzip \
+    libpng-dev \
+    libzip-dev \
+    libonig-dev \
+    nodejs \
+    npm \
+    sqlite3 \
+    && rm -rf /var/lib/apt/lists/*
+
+# Installer les extensions PHP
+RUN docker-php-ext-install \
+    pdo_mysql \
+    pdo_sqlite \
+    mbstring \
+    zip \
+    gd
+
+# Activer mod_rewrite pour Apache
+RUN a2enmod rewrite
+
+# Installer Composer
+COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
+
+# Configurer Apache
+RUN echo '<VirtualHost *:80>\n\
+    DocumentRoot /var/www/html/public\n\
+    <Directory /var/www/html/public>\n\
+        AllowOverride All\n\
+        Require all granted\n\
+    </Directory>\n\
+</VirtualHost>' > /etc/apache2/sites-available/000-default.conf
+
+# Copier les fichiers du projet
+WORKDIR /var/www/html
+COPY . .
+
+# Créer la base de données SQLite
+RUN touch /var/www/html/database/database.sqlite
+
+# Rendre les scripts exécutables
+RUN chmod +x render-build.sh
+
+# Définir les permissions
+RUN chown -R www-data:www-data /var/www/html \
+    && chmod -R 755 /var/www/html/storage \
+    && chmod -R 755 /var/www/html/bootstrap/cache \
+    && chmod 664 /var/www/html/database/database.sqlite
+
+# Exposer le port 80
+EXPOSE 80
+
+# Exécuter le build et démarrer Apache
+RUN ./render-build.sh
+CMD ["apache2-foreground"]
