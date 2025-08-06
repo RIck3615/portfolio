@@ -1,25 +1,14 @@
 FROM php:8.1-apache
 
-# Installer les outils de base d'abord
+# Installer les outils
 RUN apt-get update && apt-get install -y \
     git \
     unzip \
     curl \
     sqlite3 \
-    ca-certificates \
-    gnupg \
-    lsb-release
-
-# Installer Node.js avec la méthode recommandée
-RUN mkdir -p /etc/apt/keyrings \
-    && curl -fsSL https://deb.nodesource.com/gpgkey/nodesource-repo.gpg.key | gpg --dearmor -o /etc/apt/keyrings/nodesource.gpg \
-    && echo "deb [signed-by=/etc/apt/keyrings/nodesource.gpg] https://deb.nodesource.com/node_18.x nodistro main" | tee /etc/apt/sources.list.d/nodesource.list \
-    && apt-get update \
+    && curl -fsSL https://deb.nodesource.com/setup_18.x | bash - \
     && apt-get install -y nodejs \
     && rm -rf /var/lib/apt/lists/*
-
-# Vérifier que Node.js et npm sont installés
-RUN node --version && npm --version
 
 # Configuration Apache
 RUN a2enmod rewrite
@@ -36,7 +25,7 @@ WORKDIR /var/www/html
 # Copier le projet
 COPY . .
 
-# Créer un vendor minimal
+# Créer un vendor minimal (juste pour que l'autoload fonctionne)
 RUN mkdir -p vendor \
     && echo '<?php return [];' > vendor/autoload.php
 
@@ -45,12 +34,12 @@ RUN cp .env.example .env \
     && mkdir -p database storage/{logs,framework/{cache,sessions,views}} bootstrap/cache \
     && touch database/database.sqlite
 
-# NPM avec gestion d'erreur
-RUN npm install --production --verbose \
-    && npm run build --verbose
+# NPM seulement
+RUN npm install --production \
+    && npm run build
 
 # Configuration minimale
-RUN php -r "echo 'APP_KEY=base64:' . base64_encode(random_bytes(32)) . PHP_EOL;" >> .env
+RUN php -r "echo 'APP_KEY=' . bin2hex(random_bytes(16)) . PHP_EOL;" >> .env
 
 # Permissions
 RUN chown -R www-data:www-data /var/www/html \
