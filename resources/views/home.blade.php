@@ -3,33 +3,129 @@
 @section('title', 'Accueil')
 
 @section('content')
-<!-- Hero Section -->
+<!-- Hero Section moderne -->
 <section class="relative flex items-center justify-center min-h-screen overflow-hidden gradient-bg">
-    <div class="absolute inset-0 bg-black opacity-20"></div>
-    <div class="relative z-10 px-4 text-center text-white">
-        <div class="animate-fade-in">
-            <h1 class="mb-6 text-5xl font-bold md:text-7xl text-shadow">
-                Bonjour, je suis
-                <span class="block text-blue-200">Rick Kasenga</span>
-            </h1>
-            <p class="max-w-2xl mx-auto mb-8 text-xl md:text-2xl opacity-90">
-                Passionné par la création d'expériences web modernes et innovantes
-            </p>
-            <div class="flex flex-col justify-center gap-4 sm:flex-row">
-                <a href="{{ route('projects') }}" class="px-8 py-3 font-semibold text-blue-600 transition-colors bg-white rounded-lg hover:bg-blue-50 hover-scale">
-                    Voir mes projets
-                </a>
-                <a href="{{ route('contact') }}" class="px-8 py-3 font-semibold text-white transition-colors border-2 border-white rounded-lg hover:bg-white hover:text-blue-600 hover-scale">
-                    Me contacter
-                </a>
+    <!-- Éléments décoratifs animés -->
+    <div class="absolute inset-0">
+        <div class="absolute rounded-full w-72 h-72 bg-white/10 top-20 left-20 blur-3xl animate-pulse"></div>
+        <div class="absolute delay-1000 rounded-full w-96 h-96 bg-purple-500/10 bottom-20 right-20 blur-3xl animate-pulse"></div>
+        <div class="absolute w-48 h-48 rounded-full bg-blue-500/10 top-1/2 left-1/3 blur-2xl animate-spin-slow"></div>
+    </div>
+
+    <div class="relative z-10 px-4 mx-auto max-w-7xl">
+        <div class="grid items-center gap-12 lg:grid-cols-2">
+            <!-- Contenu principal -->
+            <div class="text-center lg:text-left">
+                <div class="animate-fade-in-up">
+                    <!-- Badge de présentation -->
+                    <div class="inline-flex items-center px-6 py-3 mb-8 text-sm font-medium border rounded-full bg-white/10 backdrop-blur-sm border-white/20">
+                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 01-8 0"></path>
+                            <circle cx="12" cy="12" r="10"></circle>
+                        </svg>
+                        Développeur Full-Stack
+                    </div>
+
+                    <h1 class="mb-6 text-5xl font-bold md:text-6xl lg:text-7xl text-shadow">
+                        Bonjour, je suis
+                        <span class="block text-transparent bg-gradient-to-r from-blue-200 to-purple-200 bg-clip-text">Rick Kasenga</span>
+                    </h1>
+
+                    <p class="max-w-2xl mx-auto mb-8 text-xl md:text-2xl opacity-90 lg:mx-0">
+                        Passionné par la création d'expériences web modernes et innovantes
+                    </p>
+
+                    <!-- Description courte -->
+                    <p class="mb-8 text-lg opacity-75">
+                        Spécialisé en développement web, analyse de données et création d'applications performantes
+                    </p>
+
+                    <!-- Boutons d'action -->
+                    <div class="flex flex-col gap-4 sm:flex-row sm:justify-start">
+                        <a href="{{ route('projects') }}"
+                           class="relative inline-flex items-center justify-center px-8 py-4 font-semibold text-blue-600 transition-all duration-300 transform bg-white shadow-lg group rounded-xl hover:bg-blue-50 hover:scale-105">
+                            <span class="relative z-10 flex items-center">
+                                <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
+                                </svg>
+                                Voir mes projets
+                            </span>
+                        </a>
+
+                        <a href="{{ route('contact') }}"
+                           class="relative inline-flex items-center justify-center px-8 py-4 font-semibold text-white transition-all duration-300 transform border-2 border-white group rounded-xl hover:bg-white hover:text-blue-600 hover:scale-105">
+                            <span class="relative z-10 flex items-center">
+                                <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path>
+                                </svg>
+                                Me contacter
+                            </span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Section droite avec infos -->
+            <div class="text-center lg:text-left">
+                <div class="delay-200 animate-fade-in-up">
+                    <!-- Avatar/Illustration -->
+                    <div class="relative mx-auto w-80 h-80 lg:mx-0">
+                        <div class="absolute inset-0 rounded-full bg-gradient-to-br from-blue-400 via-purple-500 to-pink-500 animate-spin-slow"></div>
+                        <div class="absolute flex items-center justify-center bg-white rounded-full inset-2 dark:bg-gray-800">
+                            <div class="text-center">
+                                <div class="flex items-center justify-center w-24 h-24 mx-auto mb-4 rounded-full bg-gradient-to-br from-blue-500 to-purple-600">
+                                    <svg class="w-12 h-12 text-white" fill="currentColor" viewBox="0 0 24 24">
+                                        <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+                                    </svg>
+                                </div>
+                                <h3 class="text-xl font-bold text-gray-900 dark:text-white">Rick Kasenga</h3>
+                                <p class="text-gray-600 dark:text-gray-400">Full-Stack Developer</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Stats rapides -->
+                    <div class="grid grid-cols-3 gap-6 mt-8">
+                        <div class="text-center">
+                            <div class="text-2xl font-bold text-blue-200">5+</div>
+                            <div class="text-xs opacity-75">Années d'expérience</div>
+                        </div>
+                        <div class="text-center">
+                            <div class="text-2xl font-bold text-purple-200">15+</div>
+                            <div class="text-xs opacity-75">Projets réalisés</div>
+                        </div>
+                        <div class="text-center">
+                            <div class="text-2xl font-bold text-green-200">100%</div>
+                            <div class="text-xs opacity-75">Satisfaction client</div>
+                        </div>
+                    </div>
+
+                    <!-- Technologies principales -->
+                    <div class="p-6 mt-8 border bg-white/10 backdrop-blur-sm rounded-xl border-white/20">
+                        <h3 class="mb-4 text-lg font-semibold">Technologies principales</h3>
+                        <div class="grid grid-cols-2 gap-3">
+                            <div class="flex items-center">
+                                <div class="w-2 h-2 mr-3 bg-blue-400 rounded-full"></div>
+                                <span class="text-sm">Laravel & PHP</span>
+                            </div>
+                            <div class="flex items-center">
+                                <div class="w-2 h-2 mr-3 bg-purple-400 rounded-full"></div>
+                                <span class="text-sm">Vue.js & JavaScript</span>
+                            </div>
+                            <div class="flex items-center">
+                                <div class="w-2 h-2 mr-3 bg-green-400 rounded-full"></div>
+                                <span class="text-sm">Tailwind CSS</span>
+                            </div>
+                            <div class="flex items-center">
+                                <div class="w-2 h-2 mr-3 bg-yellow-400 rounded-full"></div>
+                                <span class="text-sm">Analyse de données</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
-
-    <!-- Animated background elements -->
-    <div class="absolute w-20 h-20 bg-white rounded-full top-20 left-20 opacity-10 animate-bounce"></div>
-    <div class="absolute w-32 h-32 bg-white rounded-full bottom-20 right-20 opacity-5 animate-pulse"></div>
-    <div class="absolute w-16 h-16 bg-white rounded-full top-1/2 left-10 opacity-10 animate-spin"></div>
 </section>
 
 <!-- Skills Section -->
@@ -238,64 +334,107 @@
         <div class="absolute w-48 h-48 rounded-full top-1/2 left-1/3 bg-blue-500/10 blur-2xl animate-spin-slow"></div>
     </div>
 
-    <div class="relative z-10 max-w-6xl px-4 mx-auto text-center">
-        <div class="animate-fade-in-up">
-            <!-- Badge -->
-            <div class="inline-flex items-center px-6 py-3 mb-8 text-sm font-medium border rounded-full bg-white/10 backdrop-blur-sm border-white/20">
-                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path>
-                </svg>
-                Prêt à collaborer
-            </div>
-
-            <h2 class="mb-6 text-5xl font-bold md:text-6xl">
-                Prêt à
-                <span class="block text-transparent bg-gradient-to-r from-blue-200 to-purple-200 bg-clip-text">collaborer</span>
-                et à être recruté
-            </h2>
-
-            <p class="max-w-3xl mx-auto mb-12 text-xl md:text-2xl opacity-90">
-                Discutons de votre projet et créons quelque chose d'extraordinaire ensemble
-            </p>
-
-            <!-- Boutons modernes -->
-            <div class="flex flex-col items-center gap-6 sm:flex-row sm:justify-center">
-                <a href="{{ route('contact') }}"
-                   class="relative inline-flex items-center justify-center px-8 py-4 font-semibold text-white transition-all duration-300 transform shadow-lg group bg-gradient-to-r from-blue-600 to-purple-600 rounded-xl hover:from-blue-700 hover:to-purple-700 hover:scale-105 hover:shadow-xl">
-                    <span class="relative z-10 flex items-center">
-                        <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <div class="relative z-10 max-w-6xl px-4 mx-auto">
+        <div class="grid items-center gap-12 lg:grid-cols-2">
+            <!-- Contenu principal -->
+            <div class="text-center lg:text-left">
+                <div class="animate-fade-in-up">
+                    <!-- Badge -->
+                    <div class="inline-flex items-center px-6 py-3 mb-8 text-sm font-medium border rounded-full bg-white/10 backdrop-blur-sm border-white/20">
+                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path>
                         </svg>
-                        Commencer un projet
-                    </span>
-                    <div class="absolute inset-0 transition-opacity duration-300 opacity-0 bg-gradient-to-r from-blue-700 to-purple-700 rounded-xl group-hover:opacity-100"></div>
-                </a>
+                        Prêt à collaborer
+                    </div>
 
-                <a href="{{ route('about') }}"
-                   class="relative inline-flex items-center justify-center px-8 py-4 font-semibold text-white transition-all duration-300 transform border-2 group border-white/30 rounded-xl hover:bg-white/10 backdrop-blur-sm hover:scale-105">
-                    <span class="relative z-10 flex items-center">
-                        <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 01-8 0"></path>
-                            <circle cx="12" cy="12" r="10"></circle>
-                        </svg>
-                        En savoir plus
-                    </span>
-                </a>
+                    <h2 class="mb-6 text-4xl font-bold md:text-5xl lg:text-6xl">
+                        Prêt à
+                        <span class="block text-transparent bg-gradient-to-r from-blue-200 to-purple-200 bg-clip-text">collaborer</span>
+                        et à être recruté
+                    </h2>
+
+                    <p class="mb-8 text-lg md:text-xl opacity-90">
+                        Discutons de votre projet et créons quelque chose d'extraordinaire ensemble
+                    </p>
+
+                    <!-- Boutons modernes -->
+                    <div class="flex flex-col gap-4 sm:flex-row sm:justify-start">
+                        <a href="{{ route('contact') }}"
+                           class="relative inline-flex items-center justify-center px-8 py-4 font-semibold text-white transition-all duration-300 transform shadow-lg group bg-gradient-to-r from-blue-600 to-purple-600 rounded-xl hover:from-blue-700 hover:to-purple-700 hover:scale-105 hover:shadow-xl">
+                            <span class="relative z-10 flex items-center">
+                                <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path>
+                                </svg>
+                                Commencer un projet
+                            </span>
+                            <div class="absolute inset-0 transition-opacity duration-300 opacity-0 bg-gradient-to-r from-blue-700 to-purple-700 rounded-xl group-hover:opacity-100"></div>
+                        </a>
+
+                        <a href="{{ route('about') }}"
+                           class="relative inline-flex items-center justify-center px-8 py-4 font-semibold text-white transition-all duration-300 transform border-2 group border-white/30 rounded-xl hover:bg-white/10 backdrop-blur-sm hover:scale-105">
+                            <span class="relative z-10 flex items-center">
+                                <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 01-8 0"></path>
+                                    <circle cx="12" cy="12" r="10"></circle>
+                                </svg>
+                                En savoir plus
+                            </span>
+                        </a>
+                    </div>
+                </div>
             </div>
 
-            <!-- Stats rapides -->
-            <div class="grid max-w-2xl grid-cols-3 gap-8 mx-auto mt-16">
-                <div class="text-center">
-                    <div class="text-3xl font-bold text-blue-200">5+</div>
-                    <div class="text-sm opacity-75">Années d'expérience</div>
-                </div>
-                <div class="text-center">
-                    <div class="text-3xl font-bold text-purple-200">50+</div>
-                    <div class="text-sm opacity-75">Projets réalisés</div>
-                </div>
-                <div class="text-center">
-                    <div class="text-3xl font-bold text-green-200">100%</div>
-                    <div class="text-sm opacity-75">Satisfaction client</div>
+            <!-- Section droite avec stats et infos -->
+            <div class="text-center lg:text-left">
+                <div class="delay-200 animate-fade-in-up">
+                    <!-- Stats rapides -->
+                    <div class="grid grid-cols-3 gap-6 mb-8">
+                        <div class="text-center">
+                            <div class="text-3xl font-bold text-blue-200">5+</div>
+                            <div class="text-sm opacity-75">Années d'expérience</div>
+                        </div>
+                        <div class="text-center">
+                            <div class="text-3xl font-bold text-purple-200">15+</div>
+                            <div class="text-sm opacity-75">Projets réalisés</div>
+                        </div>
+                        <div class="text-center">
+                            <div class="text-3xl font-bold text-green-200">100%</div>
+                            <div class="text-sm opacity-75">Satisfaction client</div>
+                        </div>
+                    </div>
+
+                    <!-- Compétences clés -->
+                    <div class="p-6 border bg-white/10 backdrop-blur-sm rounded-xl border-white/20">
+                        <h3 class="mb-4 text-xl font-semibold">Expertise</h3>
+                        <div class="grid grid-cols-2 gap-3">
+                            <div class="flex items-center">
+                                <div class="w-2 h-2 mr-3 bg-blue-400 rounded-full"></div>
+                                <span class="text-sm">Développement Full-Stack</span>
+                            </div>
+                            <div class="flex items-center">
+                                <div class="w-2 h-2 mr-3 bg-purple-400 rounded-full"></div>
+                                <span class="text-sm">Analyse de données</span>
+                            </div>
+                            <div class="flex items-center">
+                                <div class="w-2 h-2 mr-3 bg-green-400 rounded-full"></div>
+                                <span class="text-sm">Applications web</span>
+                            </div>
+                            <div class="flex items-center">
+                                <div class="w-2 h-2 mr-3 bg-yellow-400 rounded-full"></div>
+                                <span class="text-sm">Optimisation SEO</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Contact rapide -->
+                    <div class="p-4 mt-6 border rounded-lg bg-white/5 backdrop-blur-sm border-white/10">
+                        <p class="mb-2 text-sm opacity-75">Disponible pour :</p>
+                        <div class="flex flex-wrap gap-2">
+                            <span class="px-3 py-1 text-xs rounded-full bg-blue-500/20">Projets freelance</span>
+                            <span class="px-3 py-1 text-xs rounded-full bg-purple-500/20">Permanent/Temporaire</span>
+                            <span class="px-3 py-1 text-xs rounded-full bg-green-500/20">Consultation</span>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>

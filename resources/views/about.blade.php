@@ -55,7 +55,7 @@
                         <div class="text-sm text-gray-500">Années d'expérience</div>
                     </div>
                     <div class="text-center">
-                        <div class="text-3xl font-bold text-purple-600">50+</div>
+                        <div class="text-3xl font-bold text-purple-600">15+</div>
                         <div class="text-sm text-gray-500">Projets réalisés</div>
                     </div>
                     <div class="text-center">
