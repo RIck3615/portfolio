@@ -4,8 +4,6 @@ services:
     env: docker
     plan: free
     dockerfilePath: ./Dockerfile
-    buildCommand: "./render-build.sh"
-    startCommand: "./render-start.sh"
     envVars:
       - key: APP_ENV
         value: production
