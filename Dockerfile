@@ -1,31 +1,26 @@
 FROM php:8.2-apache
 
-# Installer les dépendances système nécessaires
+# Installer les dépendances système essentielles seulement
 RUN apt-get update && apt-get install -y \
     git \
     unzip \
     curl \
     sqlite3 \
-    libpng-dev \
     libzip-dev \
     libonig-dev \
-    libjpeg-dev \
-    libfreetype6-dev \
     && rm -rf /var/lib/apt/lists/*
 
-# Configurer et installer les extensions PHP
-RUN docker-php-ext-configure gd --with-freetype --with-jpeg \
-    && docker-php-ext-install \
-        pdo_sqlite \
-        mbstring \
-        zip \
-        gd
+# Installer uniquement les extensions PHP essentielles (sans gd)
+RUN docker-php-ext-install \
+    pdo_sqlite \
+    mbstring \
+    zip
 
-# Installer Node.js via NodeSource (méthode officielle)
+# Installer Node.js via NodeSource
 RUN curl -fsSL https://deb.nodesource.com/setup_18.x | bash - \
     && apt-get install -y nodejs
 
-# Vérifier que Node.js est installé
+# Vérifier Node.js
 RUN node --version && npm --version
 
 # Activer mod_rewrite
@@ -46,7 +41,7 @@ RUN echo '<VirtualHost *:80>\n\
 
 WORKDIR /var/www/html
 
-# Copier composer.json en premier pour optimiser le cache Docker
+# Copier composer.json en premier
 COPY composer.json composer.lock* ./
 
 # Installer les dépendances Composer
