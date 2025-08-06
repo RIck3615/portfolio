@@ -1,18 +1,21 @@
+# Utiliser une image qui a déjà Node.js et PHP
 FROM php:8.2-apache
 
-# Installer uniquement les outils système de base
+# Installer les dépendances système
 RUN apt-get update && apt-get install -y \
     git \
     unzip \
     curl \
     sqlite3 \
+    gnupg \
     && rm -rf /var/lib/apt/lists/*
 
-# Installer Node.js directement via binaire
-RUN curl -fsSL https://nodejs.org/dist/v18.19.1/node-v18.19.1-linux-x64.tar.xz | tar -xJ -C /usr/local --strip-components=1
+# Installer Node.js via le script officiel NodeSource
+RUN curl -fsSL https://deb.nodesource.com/setup_lts.x | bash -
+RUN apt-get install -y nodejs
 
-# Vérifier Node.js
-RUN node --version && npm --version
+# Vérifier que Node.js et npm sont installés et fonctionnels
+RUN which node && which npm && node --version && npm --version
 
 # Activer mod_rewrite
 RUN a2enmod rewrite
@@ -32,20 +35,21 @@ RUN echo '<VirtualHost *:80>\n\
 
 WORKDIR /var/www/html
 
-# Copier tout le projet
+# Copier le projet
 COPY . .
 
-# Préparation des dossiers
+# Préparation
 RUN cp .env.example .env \
     && mkdir -p database storage/{logs,framework/{cache,sessions,views}} bootstrap/cache \
     && touch database/database.sqlite
 
-# Installer les dépendances Composer en ignorant les requirements de plateforme
+# Installer les dépendances Composer
 RUN composer install --no-dev --optimize-autoloader --no-interaction --ignore-platform-reqs
 
-# Installation NPM et build
-RUN npm install --production \
-    && npm run build
+# Installer les dépendances npm avec plus de verbosité pour debug
+RUN npm --version
+RUN npm install --production --verbose
+RUN npm run build --verbose
 
 # Configuration Laravel
 RUN php artisan key:generate --force \
