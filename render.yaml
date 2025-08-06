@@ -1,0 +1,23 @@
+services:
+  - type: web
+    name: rick-portfolio
+    env: docker
+    plan: free
+    dockerfilePath: ./Dockerfile
+    buildCommand: "./render-build.sh"
+    startCommand: "./render-start.sh"
+    envVars:
+      - key: APP_ENV
+        value: production
+      - key: APP_DEBUG
+        value: false
+      - key: LOG_LEVEL
+        value: error
+      - key: DB_CONNECTION
+        value: sqlite
+      - key: SESSION_DRIVER
+        value: database
+      - key: CACHE_STORE
+        value: database
+      - key: QUEUE_CONNECTION
+        value: database
