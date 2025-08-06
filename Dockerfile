@@ -5,23 +5,37 @@ RUN apt-get update && apt-get install -y \
     git \
     unzip \
     zip \
-    libpng-dev \
-    libzip-dev \
-    libonig-dev \
+    curl \
+    sqlite3 \
     nodejs \
     npm \
-    sqlite3 \
-    curl \
+    # Dépendances pour l'extension gd
+    libpng-dev \
+    libjpeg-dev \
+    libfreetype6-dev \
+    # Dépendances pour l'extension zip
+    libzip-dev \
+    # Dépendances pour l'extension mbstring
+    libonig-dev \
+    # Dépendances pour l'extension pdo_mysql
+    default-mysql-client \
+    # Dépendances pour bcmath (inclus dans PHP core)
+    # Outils de build
+    build-essential \
     && rm -rf /var/lib/apt/lists/*
 
-# Installer les extensions PHP
-RUN docker-php-ext-install \
-    pdo_mysql \
-    pdo_sqlite \
-    mbstring \
-    zip \
-    gd \
-    bcmath
+# Configurer l'extension gd avec les bonnes options
+RUN docker-php-ext-configure gd \
+        --with-freetype \
+        --with-jpeg
+
+# Installer les extensions PHP une par une pour un meilleur débogage
+RUN docker-php-ext-install pdo_mysql
+RUN docker-php-ext-install pdo_sqlite
+RUN docker-php-ext-install mbstring
+RUN docker-php-ext-install zip
+RUN docker-php-ext-install gd
+RUN docker-php-ext-install bcmath
 
 # Activer mod_rewrite pour Apache
 RUN a2enmod rewrite
