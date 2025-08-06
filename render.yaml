@@ -19,3 +19,19 @@ services:
         value: database
       - key: QUEUE_CONNECTION
         value: database
+      - key: MAIL_MAILER
+        value: smtp
+      - key: MAIL_HOST
+        value: smtp.gmail.com
+      - key: MAIL_PORT
+        value: 587
+      - key: MAIL_USERNAME
+        value: rickkas243@gmail.com
+      - key: MAIL_PASSWORD
+        value: abcdefghijklmnop
+      - key: MAIL_ENCRYPTION
+        value: tls
+      - key: MAIL_FROM_ADDRESS
+        value: rickkas243@gmail.com
+      - key: MAIL_FROM_NAME
+        value: Rick Kasenga Portfolio
