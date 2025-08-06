@@ -1,6 +1,6 @@
 FROM php:8.1-apache
 
-# Installer uniquement Node.js et les outils de base
+# Installer les outils de base
 RUN apt-get update && apt-get install -y \
     git \
     unzip \
@@ -8,16 +8,10 @@ RUN apt-get update && apt-get install -y \
     sqlite3 \
     && curl -fsSL https://deb.nodesource.com/setup_18.x | bash - \
     && apt-get install -y nodejs \
-    && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
-# Activer mod_rewrite
-RUN a2enmod rewrite
-
-# Installer Composer
-COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
-
 # Configuration Apache
+RUN a2enmod rewrite
 RUN echo '<VirtualHost *:80>\n\
     DocumentRoot /var/www/html/public\n\
     <Directory /var/www/html/public>\n\
@@ -28,39 +22,34 @@ RUN echo '<VirtualHost *:80>\n\
 
 WORKDIR /var/www/html
 
-# Copier TOUS les fichiers d'abord
+# Copier tout le projet
 COPY . .
 
-# Créer le fichier .env avant d'installer les dépendances
-RUN cp .env.example .env
+# Supprimer composer.lock pour éviter les conflits
+RUN rm -f composer.lock
 
-# Créer les dossiers nécessaires
-RUN mkdir -p database \
-    && mkdir -p storage/logs \
-    && mkdir -p storage/framework/cache \
-    && mkdir -p storage/framework/sessions \
-    && mkdir -p storage/framework/views \
-    && mkdir -p bootstrap/cache \
+# Installer Composer globalement
+RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+
+# Préparation de l'environnement
+RUN cp .env.example .env \
+    && mkdir -p database storage/{logs,framework/{cache,sessions,views}} bootstrap/cache \
     && touch database/database.sqlite
 
-# Installer les dépendances Composer SANS les scripts post-install
-RUN composer install --no-dev --optimize-autoloader --no-interaction --no-scripts
+# Installation des dépendances Composer sans le lock file
+RUN COMPOSER_ALLOW_SUPERUSER=1 composer update --no-dev --optimize-autoloader --no-interaction
 
-# Installer les dépendances npm
-RUN npm install --production
+# Installation npm et build
+RUN npm install --production \
+    && npm run build
 
-# Build des assets
-RUN npm run build
-
-# Maintenant exécuter les commandes Laravel
+# Configuration Laravel
 RUN php artisan key:generate --force \
-    && php artisan package:discover --ansi \
     && php artisan migrate --force
 
-# Définir les permissions
+# Permissions
 RUN chown -R www-data:www-data /var/www/html \
-    && chmod -R 755 storage \
-    && chmod -R 755 bootstrap/cache \
+    && chmod -R 755 storage bootstrap/cache \
     && chmod 664 database/database.sqlite
 
 EXPOSE 80
