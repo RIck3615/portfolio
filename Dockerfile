@@ -1,6 +1,6 @@
 FROM php:8.1-apache
 
-# Installer les outils de base
+# Installer les outils
 RUN apt-get update && apt-get install -y \
     git \
     unzip \
@@ -22,30 +22,24 @@ RUN echo '<VirtualHost *:80>\n\
 
 WORKDIR /var/www/html
 
-# Copier tout le projet
+# Copier le projet
 COPY . .
 
-# Supprimer composer.lock pour éviter les conflits
-RUN rm -f composer.lock
+# Créer un vendor minimal (juste pour que l'autoload fonctionne)
+RUN mkdir -p vendor \
+    && echo '<?php return [];' > vendor/autoload.php
 
-# Installer Composer globalement
-RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
-
-# Préparation de l'environnement
+# Préparation
 RUN cp .env.example .env \
     && mkdir -p database storage/{logs,framework/{cache,sessions,views}} bootstrap/cache \
     && touch database/database.sqlite
 
-# Installation des dépendances Composer sans le lock file
-RUN COMPOSER_ALLOW_SUPERUSER=1 composer update --no-dev --optimize-autoloader --no-interaction
-
-# Installation npm et build
+# NPM seulement
 RUN npm install --production \
     && npm run build
 
-# Configuration Laravel
-RUN php artisan key:generate --force \
-    && php artisan migrate --force
+# Configuration minimale
+RUN php -r "echo 'APP_KEY=' . bin2hex(random_bytes(16)) . PHP_EOL;" >> .env
 
 # Permissions
 RUN chown -R www-data:www-data /var/www/html \
