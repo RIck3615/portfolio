@@ -29,9 +29,20 @@ WORKDIR /var/www/html
 # Copier le projet
 COPY . .
 
+# Créer le fichier .env directement
+RUN echo 'APP_NAME="Rick Kasenga Portfolio"' > .env \
+    && echo 'APP_ENV=production' >> .env \
+    && echo 'APP_KEY=' >> .env \
+    && echo 'APP_DEBUG=true' >> .env \
+    && echo 'DB_CONNECTION=sqlite' >> .env \
+    && echo 'DB_DATABASE=/var/www/html/database/database.sqlite' >> .env \
+    && echo 'SESSION_DRIVER=database' >> .env \
+    && echo 'CACHE_STORE=database' >> .env \
+    && echo 'QUEUE_CONNECTION=database' >> .env \
+    && echo 'LOG_LEVEL=debug' >> .env
+
 # Préparation Laravel
-RUN cp .env.example .env \
-    && mkdir -p database storage/{logs,framework/{cache,sessions,views}} bootstrap/cache \
+RUN mkdir -p database storage/{logs,framework/{cache,sessions,views}} bootstrap/cache \
     && touch database/database.sqlite
 
 # Installer Composer avec ignore platform requirements
