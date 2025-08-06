@@ -1,56 +1,75 @@
-FROM php:8.1-apache
+FROM php:8.2-apache
 
-# Installer les outils de base d'abord
+# Installer les dépendances système nécessaires
 RUN apt-get update && apt-get install -y \
     git \
     unzip \
     curl \
     sqlite3 \
-    ca-certificates \
-    gnupg \
-    lsb-release
-
-# Installer Node.js avec la méthode recommandée
-RUN mkdir -p /etc/apt/keyrings \
-    && curl -fsSL https://deb.nodesource.com/gpgkey/nodesource-repo.gpg.key | gpg --dearmor -o /etc/apt/keyrings/nodesource.gpg \
-    && echo "deb [signed-by=/etc/apt/keyrings/nodesource.gpg] https://deb.nodesource.com/node_18.x nodistro main" | tee /etc/apt/sources.list.d/nodesource.list \
-    && apt-get update \
-    && apt-get install -y nodejs \
+    libpng-dev \
+    libzip-dev \
+    libonig-dev \
+    libjpeg-dev \
+    libfreetype6-dev \
     && rm -rf /var/lib/apt/lists/*
 
-# Vérifier que Node.js et npm sont installés
+# Configurer et installer les extensions PHP
+RUN docker-php-ext-configure gd --with-freetype --with-jpeg \
+    && docker-php-ext-install \
+        pdo_sqlite \
+        mbstring \
+        zip \
+        gd
+
+# Installer Node.js via NodeSource (méthode officielle)
+RUN curl -fsSL https://deb.nodesource.com/setup_18.x | bash - \
+    && apt-get install -y nodejs
+
+# Vérifier que Node.js est installé
 RUN node --version && npm --version
 
-# Configuration Apache
+# Activer mod_rewrite
 RUN a2enmod rewrite
+
+# Installer Composer
+COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
+
+# Configuration Apache
 RUN echo '<VirtualHost *:80>\n\
     DocumentRoot /var/www/html/public\n\
     <Directory /var/www/html/public>\n\
         AllowOverride All\n\
         Require all granted\n\
+        DirectoryIndex index.php index.html\n\
     </Directory>\n\
 </VirtualHost>' > /etc/apache2/sites-available/000-default.conf
 
 WORKDIR /var/www/html
 
-# Copier le projet
+# Copier composer.json en premier pour optimiser le cache Docker
+COPY composer.json composer.lock* ./
+
+# Installer les dépendances Composer
+RUN composer install --no-dev --optimize-autoloader --no-interaction
+
+# Copier package.json et installer npm
+COPY package.json package-lock.json* ./
+RUN npm ci --only=production
+
+# Copier le reste des fichiers
 COPY . .
 
-# Créer un vendor minimal
-RUN mkdir -p vendor \
-    && echo '<?php return [];' > vendor/autoload.php
-
-# Préparation
+# Préparation Laravel
 RUN cp .env.example .env \
     && mkdir -p database storage/{logs,framework/{cache,sessions,views}} bootstrap/cache \
     && touch database/database.sqlite
 
-# NPM avec gestion d'erreur
-RUN npm install --production --verbose \
-    && npm run build --verbose
+# Build des assets
+RUN npm run build
 
-# Configuration minimale
-RUN php -r "echo 'APP_KEY=base64:' . base64_encode(random_bytes(32)) . PHP_EOL;" >> .env
+# Configuration Laravel
+RUN php artisan key:generate --force \
+    && php artisan migrate --force
 
 # Permissions
 RUN chown -R www-data:www-data /var/www/html \
