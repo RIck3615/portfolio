@@ -28,28 +28,40 @@ RUN echo '<VirtualHost *:80>\n\
 
 WORKDIR /var/www/html
 
-# Copier et installer les dépendances
-COPY composer.json ./
-RUN composer install --no-dev --optimize-autoloader --no-interaction --ignore-platform-reqs
-
-COPY package.json package-lock.json* ./
-RUN npm install --production
-
-# Copier tout le reste
+# Copier TOUS les fichiers d'abord
 COPY . .
 
-# Configuration Laravel
-RUN cp .env.example .env \
-    && mkdir -p database storage/{logs,framework/{cache,sessions,views}} bootstrap/cache \
-    && touch database/database.sqlite \
-    && npm run build \
-    && php artisan key:generate --force \
+# Créer le fichier .env avant d'installer les dépendances
+RUN cp .env.example .env
+
+# Créer les dossiers nécessaires
+RUN mkdir -p database \
+    && mkdir -p storage/logs \
+    && mkdir -p storage/framework/cache \
+    && mkdir -p storage/framework/sessions \
+    && mkdir -p storage/framework/views \
+    && mkdir -p bootstrap/cache \
+    && touch database/database.sqlite
+
+# Installer les dépendances Composer SANS les scripts post-install
+RUN composer install --no-dev --optimize-autoloader --no-interaction --no-scripts
+
+# Installer les dépendances npm
+RUN npm install --production
+
+# Build des assets
+RUN npm run build
+
+# Maintenant exécuter les commandes Laravel
+RUN php artisan key:generate --force \
+    && php artisan package:discover --ansi \
     && php artisan migrate --force
 
-# Permissions
+# Définir les permissions
 RUN chown -R www-data:www-data /var/www/html \
-    && chmod -R 755 storage bootstrap/cache \
+    && chmod -R 755 storage \
+    && chmod -R 755 bootstrap/cache \
     && chmod 664 database/database.sqlite
 
 EXPOSE 80
-CMD ["apache2-foreground"] 
+CMD ["apache2-foreground"]
