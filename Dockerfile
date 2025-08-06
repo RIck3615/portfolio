@@ -37,12 +37,6 @@ RUN cp .env.example .env \
 # Installer Composer avec ignore platform requirements
 RUN composer install --no-dev --optimize-autoloader --no-interaction --ignore-platform-reqs
 
-# Créer les assets manuellement (sans npm build)
-RUN mkdir -p public/build/assets \
-    && echo '/* Styles de base */' > public/build/assets/app.css \
-    && echo 'console.log("App loaded");' > public/build/assets/app.js \
-    && echo '{"assets/app.css":{"file":"assets/app.css","isEntry":true},"assets/app.js":{"file":"assets/app.js","isEntry":true}}' > public/build/manifest.json
-
 # Configuration Laravel
 RUN php artisan key:generate --force \
     && php artisan migrate --force
