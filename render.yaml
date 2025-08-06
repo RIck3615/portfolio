@@ -19,5 +19,3 @@ services:
         value: database
       - key: QUEUE_CONNECTION
         value: database
-      - key: APP_KEY
-        value: base64:4YQ3rLJRzYGbRbZ6pN8Q6fX7M9K2L1wN5vP3J8F2D6A=

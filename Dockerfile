@@ -29,9 +29,10 @@ WORKDIR /var/www/html
 # Copier le projet
 COPY . .
 
-# Créer le fichier .env avec une vraie clé générée
+# Créer le fichier .env avec une clé Laravel valide pré-générée
 RUN echo 'APP_NAME="Rick Kasenga Portfolio"' > .env \
     && echo 'APP_ENV=production' >> .env \
+    && echo 'APP_KEY=base64:7gR9vQ8mX2nL5jF6D3wY9B8E2vT6H4M1R7S9Q5A3K8P=' >> .env \
     && echo 'APP_DEBUG=true' >> .env \
     && echo 'DB_CONNECTION=sqlite' >> .env \
     && echo 'DB_DATABASE=/var/www/html/database/database.sqlite' >> .env \
@@ -47,9 +48,8 @@ RUN mkdir -p database storage/{logs,framework/{cache,sessions,views}} bootstrap/
 # Installer Composer
 RUN composer install --no-dev --optimize-autoloader --no-interaction --ignore-platform-reqs
 
-# Générer la clé APRÈS l'installation de Composer
-RUN php artisan key:generate --force \
-    && php artisan migrate --force
+# Exécuter les migrations
+RUN php artisan migrate --force
 
 # Permissions
 RUN chown -R www-data:www-data /var/www/html \
