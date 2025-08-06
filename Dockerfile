@@ -1,24 +1,15 @@
 FROM php:8.2-apache
 
-# Installer les dépendances système essentielles seulement
+# Installer uniquement les outils système de base
 RUN apt-get update && apt-get install -y \
     git \
     unzip \
     curl \
     sqlite3 \
-    libzip-dev \
-    libonig-dev \
     && rm -rf /var/lib/apt/lists/*
 
-# Installer uniquement les extensions PHP essentielles (sans gd)
-RUN docker-php-ext-install \
-    pdo_sqlite \
-    mbstring \
-    zip
-
-# Installer Node.js via NodeSource
-RUN curl -fsSL https://deb.nodesource.com/setup_18.x | bash - \
-    && apt-get install -y nodejs
+# Installer Node.js directement via binaire
+RUN curl -fsSL https://nodejs.org/dist/v18.19.1/node-v18.19.1-linux-x64.tar.xz | tar -xJ -C /usr/local --strip-components=1
 
 # Vérifier Node.js
 RUN node --version && npm --version
@@ -41,26 +32,20 @@ RUN echo '<VirtualHost *:80>\n\
 
 WORKDIR /var/www/html
 
-# Copier composer.json en premier
-COPY composer.json composer.lock* ./
-
-# Installer les dépendances Composer
-RUN composer install --no-dev --optimize-autoloader --no-interaction
-
-# Copier package.json et installer npm
-COPY package.json package-lock.json* ./
-RUN npm ci --only=production
-
-# Copier le reste des fichiers
+# Copier tout le projet
 COPY . .
 
-# Préparation Laravel
+# Préparation des dossiers
 RUN cp .env.example .env \
     && mkdir -p database storage/{logs,framework/{cache,sessions,views}} bootstrap/cache \
     && touch database/database.sqlite
 
-# Build des assets
-RUN npm run build
+# Installer les dépendances Composer en ignorant les requirements de plateforme
+RUN composer install --no-dev --optimize-autoloader --no-interaction --ignore-platform-reqs
+
+# Installation NPM et build
+RUN npm install --production \
+    && npm run build
 
 # Configuration Laravel
 RUN php artisan key:generate --force \
